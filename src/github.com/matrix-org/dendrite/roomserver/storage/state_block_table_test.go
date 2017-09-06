@@ -15,9 +15,10 @@
 package storage
 
 import (
-	"github.com/matrix-org/dendrite/roomserver/types"
 	"sort"
 	"testing"
+
+	"github.com/matrix-org/dendrite/roomserver/types"
 )
 
 func TestStateKeyTupleSorter(t *testing.T) {

@@ -50,14 +50,10 @@ const selectMembershipsByLocalpartSQL = "" +
 const deleteMembershipsByEventIDsSQL = "" +
 	"DELETE FROM account_memberships WHERE event_id = ANY($1)"
 
-const updateMembershipByEventIDSQL = "" +
-	"UPDATE account_memberships SET event_id = $2 WHERE event_id = $1"
-
 type membershipStatements struct {
 	deleteMembershipsByEventIDsStmt  *sql.Stmt
 	insertMembershipStmt             *sql.Stmt
 	selectMembershipsByLocalpartStmt *sql.Stmt
-	updateMembershipByEventIDStmt    *sql.Stmt
 }
 
 func (s *membershipStatements) prepare(db *sql.DB) (err error) {
@@ -72,9 +68,6 @@ func (s *membershipStatements) prepare(db *sql.DB) (err error) {
 		return
 	}
 	if s.selectMembershipsByLocalpartStmt, err = db.Prepare(selectMembershipsByLocalpartSQL); err != nil {
-		return
-	}
-	if s.updateMembershipByEventIDStmt, err = db.Prepare(updateMembershipByEventIDSQL); err != nil {
 		return
 	}
 	return
@@ -108,10 +101,5 @@ func (s *membershipStatements) selectMembershipsByLocalpart(localpart string) (m
 		memberships = append(memberships, m)
 	}
 
-	return
-}
-
-func (s *membershipStatements) updateMembershipByEventID(oldEventID string, newEventID string) (err error) {
-	_, err = s.updateMembershipByEventIDStmt.Exec(oldEventID, newEventID)
 	return
 }

@@ -59,10 +59,6 @@ const bulkSelectEventStateKeyNIDSQL = "" +
 	"SELECT event_state_key, event_state_key_nid FROM roomserver_event_state_keys" +
 	" WHERE event_state_key = ANY($1)"
 
-const selectEventStateKeySQL = "" +
-	"SELECT event_state_key FROM roomserver_event_state_keys" +
-	" WHERE event_state_key_nid = $1"
-
 // Bulk lookup from numeric ID to string state key for that state key.
 // Takes an array of strings as the query parameter.
 const bulkSelectEventStateKeySQL = "" +
@@ -72,7 +68,6 @@ const bulkSelectEventStateKeySQL = "" +
 type eventStateKeyStatements struct {
 	insertEventStateKeyNIDStmt     *sql.Stmt
 	selectEventStateKeyNIDStmt     *sql.Stmt
-	selectEventStateKeyStmt        *sql.Stmt
 	bulkSelectEventStateKeyNIDStmt *sql.Stmt
 	bulkSelectEventStateKeyStmt    *sql.Stmt
 }
@@ -85,7 +80,6 @@ func (s *eventStateKeyStatements) prepare(db *sql.DB) (err error) {
 	return statementList{
 		{&s.insertEventStateKeyNIDStmt, insertEventStateKeyNIDSQL},
 		{&s.selectEventStateKeyNIDStmt, selectEventStateKeyNIDSQL},
-		{&s.selectEventStateKeyStmt, selectEventStateKeySQL},
 		{&s.bulkSelectEventStateKeyNIDStmt, bulkSelectEventStateKeyNIDSQL},
 		{&s.bulkSelectEventStateKeyStmt, bulkSelectEventStateKeySQL},
 	}.prepare(db)
@@ -120,12 +114,6 @@ func (s *eventStateKeyStatements) bulkSelectEventStateKeyNID(eventStateKeys []st
 		result[stateKey] = types.EventStateKeyNID(stateKeyNID)
 	}
 	return result, nil
-}
-
-func (s *eventStateKeyStatements) selectEventStateKey(txn *sql.Tx, eventStateKeyNID types.EventStateKeyNID) (string, error) {
-	var eventStateKey string
-	err := common.TxStmt(txn, s.selectEventStateKeyStmt).QueryRow(eventStateKeyNID).Scan(&eventStateKey)
-	return eventStateKey, err
 }
 
 func (s *eventStateKeyStatements) bulkSelectEventStateKey(eventStateKeyNIDs []types.EventStateKeyNID) (map[types.EventStateKeyNID]string, error) {
