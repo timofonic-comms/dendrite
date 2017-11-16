@@ -121,7 +121,7 @@ func Setup(
 			roomID := vars["roomID"]
 			userID := vars["userID"]
 			return MakeJoin(
-				httpReq.Context(), httpReq, request, cfg, query, time.Now(), keys, roomID, userID,
+				httpReq.Context(), httpReq, request, cfg, query, roomID, userID,
 			)
 		},
 	)).Methods("GET")
@@ -133,7 +133,7 @@ func Setup(
 			roomID := vars["roomID"]
 			userID := vars["userID"]
 			return SendJoin(
-				httpReq.Context(), httpReq, request, cfg, query, producer, time.Now(), keys, roomID, userID,
+				httpReq.Context(), httpReq, request, cfg, query, producer, keys, roomID, userID,
 			)
 		},
 	)).Methods("PUT")
